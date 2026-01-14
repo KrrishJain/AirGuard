@@ -26,14 +26,23 @@ pipeline {
     }
     stage('Run Smoke Test') {
   steps {
-    bat '''
-      docker rm -f airguard_test 2>NUL || exit /b 0
-      docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 airguard-server:latest
-      docker ps --filter "name=airguard_test"
-      docker logs airguard_test
-      docker rm -f airguard_test
-    '''
+    withCredentials([string(credentialsId: 'airguard-env', variable: 'ENV_TEXT')]) {
+      bat '''
+        echo %ENV_TEXT%> web\\server\\.env
+
+        docker rm -f airguard_test 2>NUL || exit /b 0
+
+        docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 airguard-server:latest || exit /b 1
+
+        docker ps --filter "name=airguard_test"
+        docker logs airguard_test
+
+        docker rm -f airguard_test
+      '''
+    }
   }
+}
+
 }
 }
   post {
