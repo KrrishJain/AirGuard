@@ -1,0 +1,8 @@
+services:
+  server:
+    build:
+      context: ./web/server
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./web/server/.env

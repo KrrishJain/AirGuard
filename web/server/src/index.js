@@ -3,7 +3,7 @@ import app from "./app.js";
 import { connectDB } from "./db/db.js";
 import { startAqiAlertCron } from "./cron/aqiAlert.cron.js";
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   try {
