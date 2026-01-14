@@ -24,7 +24,7 @@ pipeline {
         }
       }
     }
-    stage('Run Smoke Test') {
+   stage('Run Smoke Test') {
   steps {
     withCredentials([string(credentialsId: 'airguard-env', variable: 'ENV_TEXT')]) {
       bat '''
@@ -43,7 +43,6 @@ pipeline {
   }
 }
 
-}
 }
   post {
     success { echo "🎉 PIPELINE SUCCESS" }
