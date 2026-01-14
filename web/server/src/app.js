@@ -34,6 +34,10 @@ app.use((req, res, next) => {
 });
 
 /* ✅ ROUTES */
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use(aqiRoutes);
 app.use(windRiskAnalysisRoute);
 app.use(pollutionSiteRoutes);
