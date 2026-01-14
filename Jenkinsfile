@@ -24,22 +24,18 @@ pipeline {
         }
       }
     }
-
     stage('Run Smoke Test') {
   steps {
     bat '''
       docker rm -f airguard_test 2>NUL || exit /b 0
-      docker run -d --name airguard_test -p 3001:3001 airguard-server:latest
+      docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 airguard-server:latest
       docker ps --filter "name=airguard_test"
       docker logs airguard_test
       docker rm -f airguard_test
     '''
   }
 }
-
-
-  }
-
+}
   post {
     success { echo "🎉 PIPELINE SUCCESS" }
     failure { echo "❌ PIPELINE FAILED (see above error + docker output)" }
