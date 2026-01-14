@@ -26,7 +26,7 @@ pipeline {
     }
    stage('Run Smoke Test') {
   steps {
-    withCredentials([string(credentialsId: 'airguard-env', variable: 'ENV_TEXT')]) {
+    withCredentials([string(credentialsId: 'airguard-server-env', variable: 'ENV_TEXT')]) {
       bat '''
         echo %ENV_TEXT%> web\\server\\.env
 
