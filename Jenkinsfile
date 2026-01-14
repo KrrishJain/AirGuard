@@ -13,6 +13,8 @@ pipeline {
       steps {
         bat '''
           cd web\\server
+          corepack enable
+          pnpm --version
           pnpm install
           pnpm test
         '''
