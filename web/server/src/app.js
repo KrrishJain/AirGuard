@@ -45,10 +45,7 @@ app.use(complaintRoute);
 app.use(authRoutes);
 app.use(testEmailRoutes);
 
-/* ✅ HEALTH CHECK */
-app.get("/", (req, res) => {
-  res.send("Server running");
-});
+
 
 /* ❌ 404 HANDLER — MUST BE LAST */
 app.use((req, res) => {
