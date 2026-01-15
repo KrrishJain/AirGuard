@@ -16,7 +16,8 @@ pipeline {
     stage('Set Image Tag') {
       steps {
         script {
-          def commit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          def out = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          def commit = out.tokenize('\r\n')[-1].trim()
           env.IMAGE_TAG = "${env.BUILD_NUMBER}-${commit}"
           echo "🏷️ Image Tag: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
         }
