@@ -45,7 +45,6 @@ pipeline {
             echo "✅ Build done"
           } catch (err) {
             echo "❌ Docker build failed!"
-            echo "ERROR: ${err}"
             throw err
           }
         }
@@ -57,23 +56,12 @@ pipeline {
         withCredentials([file(credentialsId: 'airguard-server-env-file', variable: 'ENV_FILE')]) {
           bat '''
             copy /Y "%ENV_FILE%" web\\server\\.env
-
             docker rm -f airguard_test 2>NUL || exit /b 0
-
             docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 %IMAGE_NAME%:%IMAGE_TAG% || exit /b 1
-
             docker ps --filter "name=airguard_test"
-            docker logs airguard_test
-
             docker rm -f airguard_test
           '''
         }
-      }
-    }
-
-    stage('Show Built Image') {
-      steps {
-        echo "✅ Built image: ${env.IMAGE_NAME}:${env.IMAGE_TAG} (also tagged as latest)"
       }
     }
 
@@ -82,17 +70,19 @@ pipeline {
         withCredentials([file(credentialsId: 'ec2-key-file', variable: 'EC2_KEY')]) {
           bat '''
             @echo off
-            :: 1. Reset permissions and disable inheritance (Equivalent to chmod 400)
+            :: Fix permissions for Windows OpenSSH
             icacls "%EC2_KEY%" /reset
             icacls "%EC2_KEY%" /inheritance:r
-            
-            :: 2. Grant Read access ONLY to the current Jenkins user and the SYSTEM account
             icacls "%EC2_KEY%" /grant:r "%USERNAME%":"(R)"
             icacls "%EC2_KEY%" /grant:r "SYSTEM":"(R)"
 
-            :: 3. Connect via SSH and deploy
+            :: Deploy command with 5-second sleep before health check
             ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
-            "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server || true && docker build -t airguard-server:ec2 . && docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2 && curl -s http://localhost:3001/health"
+            "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && ^
+            docker rm -f airguard_server || true && ^
+            docker build -t airguard-server:ec2 . && ^
+            docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2 && ^
+            sleep 5 && curl -s http://localhost:3001/health"
           '''
         }
       }
@@ -101,6 +91,6 @@ pipeline {
 
   post {
     success { echo "🎉 PIPELINE SUCCESS" }
-    failure { echo "❌ PIPELINE FAILED (see logs for details)" }
+    failure { echo "❌ PIPELINE FAILED" }
   }
 }
