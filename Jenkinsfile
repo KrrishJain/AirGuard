@@ -81,10 +81,16 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'ec2-key-file', variable: 'EC2_KEY')]) {
           bat '''
+            @echo off
+            :: 1. Reset permissions and disable inheritance (Equivalent to chmod 400)
+            icacls "%EC2_KEY%" /reset
             icacls "%EC2_KEY%" /inheritance:r
-            icacls "%EC2_KEY%" /remove "Users" "BUILTIN\\Users" 2>NUL
-            icacls "%EC2_KEY%" /grant:r "SYSTEM:R" "Administrators:R"
+            
+            :: 2. Grant Read access ONLY to the current Jenkins user and the SYSTEM account
+            icacls "%EC2_KEY%" /grant:r "%USERNAME%":"(R)"
+            icacls "%EC2_KEY%" /grant:r "SYSTEM":"(R)"
 
+            :: 3. Connect via SSH and deploy
             ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
             "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server || true && docker build -t airguard-server:ec2 . && docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2 && curl -s http://localhost:3001/health"
           '''
@@ -95,6 +101,6 @@ pipeline {
 
   post {
     success { echo "🎉 PIPELINE SUCCESS" }
-    failure { echo "❌ PIPELINE FAILED (see above error + docker output)" }
+    failure { echo "❌ PIPELINE FAILED (see logs for details)" }
   }
 }
