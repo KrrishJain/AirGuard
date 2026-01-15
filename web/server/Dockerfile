@@ -27,4 +27,4 @@ COPY . .
 USER node
 
 EXPOSE 5000
-CMD ["pnpm","dev"]
+CMD ["pnpm","start"]
