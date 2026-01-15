@@ -1,11 +1,25 @@
 pipeline {
   agent any
 
+  environment {
+    IMAGE_NAME = "airguard-server"
+  }
+
   stages {
     stage('Checkout') {
       steps {
         checkout scm
         echo "✅ Checkout done"
+      }
+    }
+
+    stage('Set Image Tag') {
+      steps {
+        script {
+          def commit = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+          env.IMAGE_TAG = "${env.BUILD_NUMBER}-${commit}"
+          echo "🏷️ Image Tag: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+        }
       }
     }
 
@@ -26,7 +40,7 @@ pipeline {
         script {
           try {
             echo "🚀 Building Docker image..."
-            bat 'docker build -t airguard-server:latest web\\server'
+            bat "docker build -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} -t ${env.IMAGE_NAME}:latest web\\\\server"
             echo "✅ Build done"
           } catch (err) {
             echo "❌ Docker build failed!"
@@ -40,19 +54,25 @@ pipeline {
     stage('Run Smoke Test') {
       steps {
         withCredentials([string(credentialsId: 'airguard-server-env', variable: 'ENV_TEXT')]) {
-          bat '''
+          bat """
             echo %ENV_TEXT%> web\\server\\.env
 
             docker rm -f airguard_test 2>NUL || exit /b 0
 
-            docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 airguard-server:latest || exit /b 1
+            docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 ${env.IMAGE_NAME}:${env.IMAGE_TAG} || exit /b 1
 
             docker ps --filter "name=airguard_test"
             docker logs airguard_test
 
             docker rm -f airguard_test
-          '''
+          """
         }
+      }
+    }
+
+    stage('Show Built Image') {
+      steps {
+        echo "✅ Built image: ${env.IMAGE_NAME}:${env.IMAGE_TAG} (also tagged as latest)"
       }
     }
   }
