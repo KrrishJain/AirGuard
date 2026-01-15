@@ -80,14 +80,15 @@ pipeline {
 
     stage('Deploy to EC2') {
       steps {
-        sshagent(credentials: ['ec2-ssh']) {
+        withCredentials([file(credentialsId: 'ec2-key-file', variable: 'EC2_KEY')]) {
           bat '''
-            ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
+            ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
             "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server || true && docker build -t airguard-server:ec2 . && docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2 && curl -s http://localhost:3001/health"
           '''
         }
       }
     }
+
   }
 
   post {
