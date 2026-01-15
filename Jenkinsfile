@@ -54,22 +54,23 @@ pipeline {
 
     stage('Run Smoke Test') {
       steps {
-        withCredentials([string(credentialsId: 'airguard-server-env', variable: 'ENV_TEXT')]) {
-          bat """
-            echo %ENV_TEXT%> web\\server\\.env
+        withCredentials([file(credentialsId: 'airguard-server-env-file', variable: 'ENV_FILE')]) {
+          bat '''
+            copy /Y "%ENV_FILE%" web\\server\\.env
 
             docker rm -f airguard_test 2>NUL || exit /b 0
 
-            docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 ${env.IMAGE_NAME}:${env.IMAGE_TAG} || exit /b 1
+            docker run -d --name airguard_test --env-file web\\server\\.env -p 3001:3001 %IMAGE_NAME%:%IMAGE_TAG% || exit /b 1
 
             docker ps --filter "name=airguard_test"
             docker logs airguard_test
 
             docker rm -f airguard_test
-          """
+          '''
         }
       }
     }
+
 
     stage('Show Built Image') {
       steps {
