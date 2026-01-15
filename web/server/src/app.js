@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 
 /* ✅ ROUTES */
 app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
+  res.status(200).json({ status: "pipeline working" });
 });
 
 app.use(aqiRoutes);
