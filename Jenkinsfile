@@ -71,7 +71,6 @@ pipeline {
       }
     }
 
-
     stage('Show Built Image') {
       steps {
         echo "✅ Built image: ${env.IMAGE_NAME}:${env.IMAGE_TAG} (also tagged as latest)"
