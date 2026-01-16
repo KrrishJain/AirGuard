@@ -10,26 +10,9 @@ import authRoutes from "./routes/auth.routes.js";
 const app = express();
 
 /* ✅ JSON FIRST */
-const allowed = [
-  "http://localhost:5173",
-  "https://air-guard-9h62.vercel.app",
-];
 
 app.use(cors({
-  origin: (origin, cb) => {
-    console.log("🌐 Request from origin:", origin); // Add logging to see what's coming
-    
-    if (!origin) return cb(null, true); // postman/thunder/same-origin
-    
-    // Allow any Vercel deployment URL
-    if (origin.endsWith(".vercel.app")) return cb(null, true);
-    
-    // Allow localhost
-    if (allowed.includes(origin)) return cb(null, true);
-    
-    console.error("❌ CORS blocked origin:", origin);
-    return cb(new Error("Not allowed by CORS"));
-  },
+  origin: true, // ⚠️ Allow all origins (ONLY FOR TESTING)
   credentials: true,
 }));
 
