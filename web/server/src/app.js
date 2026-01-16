@@ -10,16 +10,19 @@ import authRoutes from "./routes/auth.routes.js";
 const app = express();
 
 /* ✅ JSON FIRST */
-app.use(express.json());
+const allowed = [
+  "http://localhost:5173",
+  "https://air-guard-9h62.vercel.app",
+];
 
-/* ✅ CORS */
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://air-guard-9h62.vercel.app"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // postman/thunder
+    if (allowed.includes(origin) || origin.endsWith(".vercel.app")) return cb(null, true);
+    return cb(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+}));
 
 
 /* 🔍 GLOBAL DEBUG LOGGER */
