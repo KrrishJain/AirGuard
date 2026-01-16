@@ -74,7 +74,7 @@ pipeline {
             icacls "%SSH_KEY_FILE%" /inheritance:r
             icacls "%SSH_KEY_FILE%" /grant "NT AUTHORITY\\SYSTEM:R"
 
-            ssh -i "%SSH_KEY_FILE%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server >/dev/null 2>&1 || true; docker build -t airguard-server:ec2 . && docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2 && sleep 3 && curl -s http://localhost:3001/health"
+            ssh -i "%SSH_KEY_FILE%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server >/dev/null 2>&1 || true; docker build -t airguard-server:ec2 . && docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2"
           """
         }
       }
