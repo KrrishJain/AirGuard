@@ -15,11 +15,12 @@ app.use(express.json());
 /* ✅ CORS */
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://air-guard-9h62.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 
 /* 🔍 GLOBAL DEBUG LOGGER */
 app.use((req, res, next) => {
