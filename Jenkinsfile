@@ -69,10 +69,9 @@ pipeline {
 
     stage('Deploy to EC2') {
       steps {
-        // We use sshagent instead of withCredentials(file) to avoid Windows permission errors
-        sshagent(credentials: ['ec2-key-file']) {
+        withCredentials([file(credentialsId: 'ec2-key-file', variable: 'SSH_KEY_FILE')]) {
           bat """
-            ssh -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "set -e; \\
+            ssh -i "%SSH_KEY_FILE%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "set -e; \\
               cd ~/AirGuard; \\
               git checkout development; \\
               git pull origin development; \\
@@ -86,5 +85,9 @@ pipeline {
         }
       }
     }
+  }
+  post {
+    success { echo "🎉🎉 PIPELINE SUCCESS" }
+    failure { echo "❌ PIPELINE FAILED" }
   }
 }
