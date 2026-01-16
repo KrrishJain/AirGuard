@@ -19,7 +19,7 @@ const AQIDashboard = () => {
   const fetchAQIData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://3.109.2.225:3001/api/current-aqi", {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/current-aqi`, {
         params: {
           lat: location.latitude,
           lng: location.longitude,

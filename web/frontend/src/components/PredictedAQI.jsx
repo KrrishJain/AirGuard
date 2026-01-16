@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const PredictedAQI = () => {
   const [predictedAQI, setPredictedAQI] = useState(null);
@@ -8,9 +9,9 @@ const PredictedAQI = () => {
     const fetchPredictedAQI = async () => {
       try {
         setLoading(true);
-        const res = await fetch("http://localhost:3001/api/predicted-aqi");
-        if (!res.ok) throw new Error("Failed to fetch predicted AQI");
-        const data = await res.json();
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/predicted-aqi`
+        );
         setPredictedAQI(data);
       } catch (err) {
         console.error(err);

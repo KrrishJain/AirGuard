@@ -7,10 +7,9 @@ import LocationPickerMap from "../components/LocationPickerMap";
 /* ---------- short reverse geocode ---------- */
 const reverseGeocode = async (lat, lng) => {
   try {
-    const res = await fetch(
+    const { data } = await axios.get(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
     );
-    const data = await res.json();
     return (
       data.address?.suburb ||
       data.address?.neighbourhood ||
@@ -46,7 +45,7 @@ const PollutionSites = () => {
 
     const fetchSites = async () => {
       const res = await axios.get(
-        "http://localhost:3001/api/get-pollution-site",
+        `${import.meta.env.VITE_API_BASE_URL}/api/get-pollution-site`,
         {
           params: {
             lat: location.latitude,
@@ -65,10 +64,7 @@ const PollutionSites = () => {
   const openModal = async () => {
     if (!location) return;
 
-    const label = await reverseGeocode(
-      location.latitude,
-      location.longitude
-    );
+    const label = await reverseGeocode(location.latitude, location.longitude);
 
     setForm({
       name: "",
@@ -94,13 +90,16 @@ const PollutionSites = () => {
     try {
       setSubmitting(true);
 
-      await axios.post("http://localhost:3001/api/add-pollution-site", {
-        name: form.name,
-        siteType: form.siteType,
-        emissionType: form.emissionType,
-        latitude: form.latitude,
-        longitude: form.longitude,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/add-pollution-site`,
+        {
+          name: form.name,
+          siteType: form.siteType,
+          emissionType: form.emissionType,
+          latitude: form.latitude,
+          longitude: form.longitude,
+        }
+      );
 
       setShowModal(false);
       setSubmitting(false);
@@ -201,33 +200,26 @@ const PollutionSites = () => {
             />
 
             <div className="text-sm mb-3">
-  {form.locationLabel ? (
-    <span className="text-emerald-400">
-      📍 {form.locationLabel}
-    </span>
-  ) : (
-    <span className="text-white/60 animate-pulse">
-      Detecting location...
-    </span>
-  )}
-</div>
-
+              {form.locationLabel ? (
+                <span className="text-emerald-400">📍 {form.locationLabel}</span>
+              ) : (
+                <span className="text-white/60 animate-pulse">
+                  Detecting location...
+                </span>
+              )}
+            </div>
 
             <input
               placeholder="Site name"
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full mb-3 p-2 rounded bg-gray-700 text-white"
             />
 
             <select
               className="w-full mb-3 p-2 rounded bg-gray-700 text-white"
               value={form.siteType}
-              onChange={(e) =>
-                setForm({ ...form, siteType: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, siteType: e.target.value })}
             >
               <option value="construction">Construction</option>
               <option value="industry">Industry</option>

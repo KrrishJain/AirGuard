@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaWind, FaMapMarkerAlt } from "react-icons/fa";
 import { MdOutlineDangerous } from "react-icons/md";
+import axios from "axios";
 
 const WindRiskAnalysis = () => {
   const [data, setData] = useState(null);
@@ -8,9 +9,9 @@ const WindRiskAnalysis = () => {
   useEffect(() => {
     const fetchWindRisk = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/wind-risk-analysis");
-        if (!res.ok) throw new Error("Failed to fetch wind risk data");
-        const result = await res.json();
+        const { data: result } = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/wind-risk-analysis`
+        );
         setData(result);
       } catch (err) {
         console.error(err);
@@ -35,16 +36,12 @@ const WindRiskAnalysis = () => {
       {/* Source AQI */}
       <div className="flex items-center gap-4 mb-6">
         <span className="text-white/70 text-sm">Source AQI</span>
-        <span className="text-5xl font-bold text-rose-400">
-          {data.source_aqi}
-        </span>
+        <span className="text-5xl font-bold text-rose-400">{data.source_aqi}</span>
       </div>
 
       {/* Affected Locations */}
       <div className="mb-6">
-        <h3 className="text-white font-semibold mb-4">
-          Affected Nearby Locations
-        </h3>
+        <h3 className="text-white font-semibold mb-4">Affected Nearby Locations</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {data.affected_locations.map((loc, idx) => (
@@ -54,9 +51,7 @@ const WindRiskAnalysis = () => {
             >
               <div className="flex items-center gap-2 mb-2">
                 <FaMapMarkerAlt className="text-blue-400" />
-                <span className="text-white font-semibold">
-                  {loc.name}
-                </span>
+                <span className="text-white font-semibold">{loc.name}</span>
               </div>
 
               <div className="text-white/70 text-sm">
@@ -65,9 +60,7 @@ const WindRiskAnalysis = () => {
 
               <div className="text-white/70 text-sm">
                 Risk Score:{" "}
-                <span className="text-rose-400 font-semibold">
-                  {loc.risk_score}
-                </span>
+                <span className="text-rose-400 font-semibold">{loc.risk_score}</span>
               </div>
             </div>
           ))}
@@ -79,22 +72,14 @@ const WindRiskAnalysis = () => {
         <div className="bg-white/10 rounded-xl p-4 border border-white/10">
           <div className="flex items-center gap-2 mb-1">
             <MdOutlineDangerous className="text-yellow-400" />
-            <span className="text-white font-semibold">
-              Prediction Confidence
-            </span>
+            <span className="text-white font-semibold">Prediction Confidence</span>
           </div>
-          <p className="text-white/70 text-sm">
-            {data.confidence}
-          </p>
+          <p className="text-white/70 text-sm">{data.confidence}</p>
         </div>
 
         <div className="bg-white/10 rounded-xl p-4 border border-white/10">
-          <span className="text-white font-semibold">
-            Assumptions
-          </span>
-          <p className="text-white/70 text-sm mt-1">
-            {data.assumptions}
-          </p>
+          <span className="text-white font-semibold">Assumptions</span>
+          <p className="text-white/70 text-sm mt-1">{data.assumptions}</p>
         </div>
       </div>
     </div>

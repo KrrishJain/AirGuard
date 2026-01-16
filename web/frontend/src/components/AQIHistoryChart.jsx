@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import axios from "axios";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
@@ -22,7 +23,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-
 const AQIHistoryChart = () => {
   const [chartData, setChartData] = useState(null);
   const [location, setLocation] = useState("");
@@ -30,10 +30,10 @@ const AQIHistoryChart = () => {
   // reverse geocode lat/lng → area name
   const fetchLocationName = async (lat, lon) => {
     try {
-      const res = await fetch(
+      const { data } = await axios.get(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
       );
-      const data = await res.json();
+
       return (
         data.address?.suburb ||
         data.address?.neighbourhood ||
@@ -49,8 +49,9 @@ const AQIHistoryChart = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/aqi-history");
-        const data = await res.json();
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/api/aqi-history`
+        );
 
         // take every 2nd hour → 24hr span (2-hour interval)
         const filtered = data.data.filter((_, idx) => idx % 2 === 0);
@@ -92,7 +93,6 @@ const AQIHistoryChart = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-6 shadow-2xl border border-white/10">
-      
       {/* Header */}
       <div className="flex justify-between items-start mb-6">
         <div>
@@ -120,11 +120,7 @@ const AQIHistoryChart = () => {
       <div className="max-w-6xl mx-auto">
         <div className="h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData.data}
-              barCategoryGap="0%"
-              barGap={0}
-            >
+            <BarChart data={chartData.data} barCategoryGap="0%" barGap={0}>
               {/* Gradient */}
               <defs>
                 <linearGradient id="aqiGradient" x1="0" y1="0" x2="0" y2="1">
@@ -144,12 +140,7 @@ const AQIHistoryChart = () => {
 
               <Tooltip content={<CustomTooltip />} cursor={false} />
 
-
-              <Bar
-                dataKey="aqi"
-                fill="url(#aqiGradient)"
-                barSize={barWidth}
-              />
+              <Bar dataKey="aqi" fill="url(#aqiGradient)" barSize={barWidth} />
             </BarChart>
           </ResponsiveContainer>
         </div>

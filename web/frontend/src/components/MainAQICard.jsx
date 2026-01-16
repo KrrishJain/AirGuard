@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw, MapPin, Cloud, Droplets, Wind, Sun } from "lucide-react";
 import { fmt } from "../utils/format.js";
 import { getAQICategory } from "../utils/AqiCategory.jsx";
+import axios from "axios";
 
 const MainAQICard = ({ data, onRefresh, loading }) => {
   const category = getAQICategory(data.aqi);
@@ -13,10 +14,9 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
 
     const fetchLocationName = async () => {
       try {
-        const res = await fetch(
+        const { data: geo } = await axios.get(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${data.latitude}&lon=${data.longitude}`
         );
-        const geo = await res.json();
 
         const address = geo.address || {};
         const name =
@@ -30,9 +30,7 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
 
         const state = address.state || "";
 
-        setLocationName(
-          state ? `${name}, ${state}` : name
-        );
+        setLocationName(state ? `${name}, ${state}` : name);
       } catch (err) {
         console.error("Reverse geocode failed:", err);
         setLocationName("Unknown location");
@@ -73,9 +71,7 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
       <div className="grid lg:grid-cols-2 gap-8 items-center">
         {/* LEFT */}
         <div>
-          <div className="text-8xl font-bold text-white">
-            {fmt(data.aqi, 0)}
-          </div>
+          <div className="text-8xl font-bold text-white">{fmt(data.aqi, 0)}</div>
 
           <div className="text-3xl font-semibold text-white mt-2">
             {category.label}
@@ -98,9 +94,7 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
           <div className="flex items-center gap-4 mb-6">
             <Cloud className="w-10 h-10 text-white" />
             <div>
-              <div className="text-4xl text-white">
-                {fmt(data.temperature)}°C
-              </div>
+              <div className="text-4xl text-white">{fmt(data.temperature)}°C</div>
               <div className="text-white/70">Overcast</div>
             </div>
           </div>
@@ -115,8 +109,7 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
               {fmt(data.wind_speed)} km/h
             </div>
             <div>
-              <Sun className="mx-auto mb-2" />
-              5
+              <Sun className="mx-auto mb-2" />5
             </div>
           </div>
         </div>
