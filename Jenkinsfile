@@ -94,7 +94,7 @@ pipeline {
   }
 
   post {
-    success { echo "🎉 PIPELINE SUCCESS" }
+    success { echo "🎉🎉 PIPELINE SUCCESS" }
     failure { echo "❌ PIPELINE FAILED" }
   }
 }
