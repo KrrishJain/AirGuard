@@ -70,14 +70,23 @@ pipeline {
         withCredentials([file(credentialsId: 'ec2-key-file', variable: 'EC2_KEY')]) {
           bat '''
             @echo off
-            rem Fix permissions for Windows OpenSSH (LocalSystem Jenkins service)
-            icacls "%EC2_KEY%" /reset >NUL
-            icacls "%EC2_KEY%" /inheritance:r >NUL
-            icacls "%EC2_KEY%" /remove "Users" "Authenticated Users" "BUILTIN\\Users" >NUL 2>&1
-            icacls "%EC2_KEY%" /grant:r "SYSTEM:R" "Administrators:R" >NUL
+            :: 1. Reset permissions and remove inheritance (Critical for Windows OpenSSH)
+            icacls "%EC2_KEY%" /reset
+            icacls "%EC2_KEY%" /inheritance:r
+            
+            :: 2. Grant Read access ONLY to the current user and SYSTEM
+            :: Using %USERNAME% fixes the "No mapping between account names" error 
+            icacls "%EC2_KEY%" /grant:r "%USERNAME%":"(R)"
+            icacls "%EC2_KEY%" /grant:r "SYSTEM":"(R)"
 
-            rem IMPORTANT: No ^ inside the remote Linux command. Use bash chaining.
-            ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com "set -e; cd ~/AirGuard; git checkout development; git pull origin development; cd web/server; docker rm -f airguard_server || true; docker build -t airguard-server:ec2 .; docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; sleep 5; curl -s http://localhost:3001/health"
+            :: 3. Execute Remote Deployment
+            :: 'set -e' ensures the script stops if any command fails on the EC2 
+            ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
+            "set -e; cd ~/AirGuard; git checkout development; git pull origin development; cd web/server; ^
+            docker rm -f airguard_server || true; ^
+            docker build -t airguard-server:ec2 .; ^
+            docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; ^
+            sleep 10; curl -s http://localhost:3001/health"
           '''
         }
       }
