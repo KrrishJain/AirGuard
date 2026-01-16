@@ -68,27 +68,23 @@ pipeline {
     }
 
     stage('Deploy to EC2') {
-  steps {
-    // This replaces withCredentials and handles permissions automatically
-    sshagent(credentials: ['ec2-key-file']) {
-      bat """
-        ssh -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "set -e; \\
-          cd ~/AirGuard; \\
-          git checkout development; \\
-          git pull origin development; \\
-          cd web/server; \\
-          docker rm -f airguard_server >/dev/null 2>&1 || true; \\
-          docker build -t airguard-server:ec2 .; \\
-          docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; \\
-          sleep 3; \\
-          curl -s http://localhost:3001/health"
-      """
+      steps {
+        // We use sshagent instead of withCredentials(file) to avoid Windows permission errors
+        sshagent(credentials: ['ec2-key-file']) {
+          bat """
+            ssh -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "set -e; \\
+              cd ~/AirGuard; \\
+              git checkout development; \\
+              git pull origin development; \\
+              cd web/server; \\
+              docker rm -f airguard_server >/dev/null 2>&1 || true; \\
+              docker build -t airguard-server:ec2 .; \\
+              docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; \\
+              sleep 3; \\
+              curl -s http://localhost:3001/health"
+          """
+        }
+      }
     }
-  }
-}
-
-  post {
-    success { echo "🎉🎉 PIPELINE SUCCESS" }
-    failure { echo "❌ PIPELINE FAILED" }
   }
 }
