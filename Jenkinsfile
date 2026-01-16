@@ -3,6 +3,8 @@ pipeline {
 
   environment {
     IMAGE_NAME = "airguard-server"
+    EC2_HOST   = "ec2-3-109-2-225.ap-south-1.compute.amazonaws.com"
+    EC2_USER   = "ubuntu"
   }
 
   stages {
@@ -68,33 +70,26 @@ pipeline {
     stage('Deploy to EC2') {
       steps {
         withCredentials([file(credentialsId: 'ec2-key-file', variable: 'EC2_KEY')]) {
-          bat '''
-            @echo off
-            :: 1. Reset permissions and remove inheritance (Critical for Windows OpenSSH)
-            icacls "%EC2_KEY%" /reset
-            icacls "%EC2_KEY%" /inheritance:r
-            
-            :: 2. Grant Read access ONLY to the current user and SYSTEM
-            :: Using %USERNAME% fixes the "No mapping between account names" error 
-            icacls "%EC2_KEY%" /grant:r "%USERNAME%":"(R)"
-            icacls "%EC2_KEY%" /grant:r "SYSTEM":"(R)"
-
-            :: 3. Execute Remote Deployment
-            :: 'set -e' ensures the script stops if any command fails on the EC2 
-            ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no ubuntu@ec2-3-109-2-225.ap-south-1.compute.amazonaws.com ^
-            "set -e; cd ~/AirGuard; git checkout development; git pull origin development; cd web/server; ^
-            docker rm -f airguard_server || true; ^
-            docker build -t airguard-server:ec2 .; ^
-            docker run -d --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; ^
-            sleep 10; curl -s http://localhost:3001/health"
-          '''
+          bat """
+            ssh -i "%EC2_KEY%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "set -e; \
+              cd ~/AirGuard; \
+              git checkout development; \
+              git pull origin development; \
+              cd web/server; \
+              docker rm -f airguard_server >/dev/null 2>&1 || true; \
+              docker build -t airguard-server:ec2 .; \
+              docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2; \
+              sleep 3; \
+              curl -s http://localhost:3001/health \
+            "
+          """
         }
       }
     }
   }
 
   post {
-    success { echo "🎉 PIPELINE SUCCESS" }
+    success { echo "🎉🎉 PIPELINE SUCCESS" }
     failure { echo "❌ PIPELINE FAILED" }
   }
 }
