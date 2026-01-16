@@ -17,8 +17,17 @@ const allowed = [
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // postman/thunder
-    if (allowed.includes(origin) || origin.endsWith(".vercel.app")) return cb(null, true);
+    console.log("🌐 Request from origin:", origin); // Add logging to see what's coming
+    
+    if (!origin) return cb(null, true); // postman/thunder/same-origin
+    
+    // Allow any Vercel deployment URL
+    if (origin.endsWith(".vercel.app")) return cb(null, true);
+    
+    // Allow localhost
+    if (allowed.includes(origin)) return cb(null, true);
+    
+    console.error("❌ CORS blocked origin:", origin);
     return cb(new Error("Not allowed by CORS"));
   },
   credentials: true,
