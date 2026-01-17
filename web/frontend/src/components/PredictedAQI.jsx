@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { api } from "../services/api"; // ✅ Added
 
 const PredictedAQI = () => {
   const [predictedAQI, setPredictedAQI] = useState(null);
@@ -9,9 +9,8 @@ const PredictedAQI = () => {
     const fetchPredictedAQI = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/predicted-aqi`
-        );
+        // ✅ Changed to use api instance
+        const { data } = await api.get('/api/predicted-aqi');
         setPredictedAQI(data);
       } catch (err) {
         console.error(err);

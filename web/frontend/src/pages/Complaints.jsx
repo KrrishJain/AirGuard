@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { api } from "../services/api"; // ✅ Added
 import { useLocationContext } from "../context/LocationContext";
 import LocationPickerMap from "../components/LocationPickerMap";
 
@@ -60,9 +61,8 @@ const Complaints = () => {
   /* -------- Fetch Complaints -------- */
   const fetchComplaints = async () => {
     try {
-      const { data: json } = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/get-all-complaints`
-      );
+      // ✅ Changed to use api instance
+      const { data: json } = await api.get('/api/get-all-complaints');
 
       const enriched = await Promise.all(
         json.data.map(async (c) => {
@@ -98,11 +98,10 @@ const Complaints = () => {
     try {
       setIsSubmitting(true);
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/report-complaint`,
-        form,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      // ✅ Changed to use api instance
+      await api.post('/api/report-complaint', form, {
+        headers: { "Content-Type": "application/json" }
+      });
 
       setShowModal(false);
       setForm((prev) => ({ ...prev, description: "" }));

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { api } from "../services/api"; // ✅ Added
 import PollutionMap from "../utils/PollutionMap.jsx";
 import { useLocationContext } from "../context/LocationContext";
 import LocationPickerMap from "../components/LocationPickerMap";
@@ -44,16 +45,14 @@ const PollutionSites = () => {
     if (!location) return;
 
     const fetchSites = async () => {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/get-pollution-site`,
-        {
-          params: {
-            lat: location.latitude,
-            lng: location.longitude,
-            radius: 30,
-          },
-        }
-      );
+      // ✅ Changed to use api instance
+      const res = await api.get('/api/get-pollution-site', {
+        params: {
+          lat: location.latitude,
+          lng: location.longitude,
+          radius: 30,
+        },
+      });
       setSites(res.data.data);
     };
 
@@ -90,16 +89,14 @@ const PollutionSites = () => {
     try {
       setSubmitting(true);
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/add-pollution-site`,
-        {
-          name: form.name,
-          siteType: form.siteType,
-          emissionType: form.emissionType,
-          latitude: form.latitude,
-          longitude: form.longitude,
-        }
-      );
+      // ✅ Changed to use api instance
+      await api.post('/api/add-pollution-site', {
+        name: form.name,
+        siteType: form.siteType,
+        emissionType: form.emissionType,
+        latitude: form.latitude,
+        longitude: form.longitude,
+      });
 
       setShowModal(false);
       setSubmitting(false);

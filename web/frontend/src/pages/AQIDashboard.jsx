@@ -1,9 +1,9 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import MainAQICard from "../components/MainAQICard";
 import MajorPollutants from "../components/MajorPollutants";
 import AQIHistoryChart from "../components/AQIHistoryChart";
 import { useLocationContext } from "../context/LocationContext";
+import { api } from "../services/api"; // ✅ Import the configured api instance
 
 const AQIDashboard = () => {
   const [aqiData, setAqiData] = useState(null);
@@ -19,7 +19,8 @@ const AQIDashboard = () => {
   const fetchAQIData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/current-aqi`, {
+      // ✅ Use the configured api instance instead of direct axios
+      const res = await api.get('/api/current-aqi', {
         params: {
           lat: location.latitude,
           lng: location.longitude,

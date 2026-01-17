@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
+import { api } from "../services/api"; // ✅ Added
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload || !payload.length) return null;
@@ -49,9 +50,8 @@ const AQIHistoryChart = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/aqi-history`
-        );
+        // ✅ Changed to use api instance
+        const { data } = await api.get('/api/aqi-history');
 
         // take every 2nd hour → 24hr span (2-hour interval)
         const filtered = data.data.filter((_, idx) => idx % 2 === 0);

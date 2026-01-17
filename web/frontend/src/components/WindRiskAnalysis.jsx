@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaWind, FaMapMarkerAlt } from "react-icons/fa";
 import { MdOutlineDangerous } from "react-icons/md";
-import axios from "axios";
+import { api } from "../services/api"; // ✅ Added
 
 const WindRiskAnalysis = () => {
   const [data, setData] = useState(null);
@@ -9,9 +9,8 @@ const WindRiskAnalysis = () => {
   useEffect(() => {
     const fetchWindRisk = async () => {
       try {
-        const { data: result } = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/wind-risk-analysis`
-        );
+        // ✅ Changed to use api instance
+        const { data: result } = await api.get('/api/wind-risk-analysis');
         setData(result);
       } catch (err) {
         console.error(err);
