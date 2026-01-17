@@ -10,7 +10,7 @@ const PredictedAQI = () => {
       try {
         setLoading(true);
         // ✅ Changed to use api instance
-        const { data } = await api.get('/api/predicted-aqi');
+        const { data } = await api.get/predicted-aqi');
         setPredictedAQI(data);
       } catch (err) {
         console.error(err);

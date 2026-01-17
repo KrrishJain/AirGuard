@@ -10,7 +10,7 @@ const WindRiskAnalysis = () => {
     const fetchWindRisk = async () => {
       try {
         // ✅ Changed to use api instance
-        const { data: result } = await api.get('/api/wind-risk-analysis');
+        const { data: result } = await api.get('/wind-risk-analysis');
         setData(result);
       } catch (err) {
         console.error(err);

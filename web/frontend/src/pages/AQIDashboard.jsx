@@ -20,7 +20,7 @@ const AQIDashboard = () => {
     try {
       setLoading(true);
       // ✅ Use the configured api instance instead of direct axios
-      const res = await api.get('/api/current-aqi', {
+      const res = await api.get('/current-aqi', {
         params: {
           lat: location.latitude,
           lng: location.longitude,

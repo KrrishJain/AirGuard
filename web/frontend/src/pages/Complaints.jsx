@@ -62,7 +62,7 @@ const Complaints = () => {
   const fetchComplaints = async () => {
     try {
       // ✅ Changed to use api instance
-      const { data: json } = await api.get('/api/get-all-complaints');
+      const { data: json } = await api.get('/get-all-complaints');
 
       const enriched = await Promise.all(
         json.data.map(async (c) => {
@@ -99,7 +99,7 @@ const Complaints = () => {
       setIsSubmitting(true);
 
       // ✅ Changed to use api instance
-      await api.post('/api/report-complaint', form, {
+      await api.post('/report-complaint', form, {
         headers: { "Content-Type": "application/json" }
       });
 

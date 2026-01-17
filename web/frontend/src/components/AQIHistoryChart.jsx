@@ -51,7 +51,7 @@ const AQIHistoryChart = () => {
     const fetchHistory = async () => {
       try {
         // ✅ Changed to use api instance
-        const { data } = await api.get('/api/aqi-history');
+        const { data } = await api.get('/aqi-history');
 
         // take every 2nd hour → 24hr span (2-hour interval)
         const filtered = data.data.filter((_, idx) => idx % 2 === 0);
