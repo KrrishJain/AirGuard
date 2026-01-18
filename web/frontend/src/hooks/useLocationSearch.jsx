@@ -9,7 +9,8 @@ const Navbar = () => {
   const { location, setLocation } = useLocationContext();
   const [query, setQuery] = useState("");
   const [showMap, setShowMap] = useState(false);
-  const [searchError, setSearchError] = useState(""); // ✅ added
+  const [searchError, setSearchError] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ added
 
   const linkClass = ({ isActive }) =>
     `cursor-pointer ${
@@ -17,17 +18,23 @@ const Navbar = () => {
     }`;
 
   const searchLocation = async (e) => {
-    if (e.key !== "Enter" || !query.trim()) return;
+    if (e.key !== "Enter" || loading) return; // ✅ block while loading
 
-    setSearchError(""); // ✅ clear previous error
+    const q = query.trim();
+    if (!q) return;
+
+    setSearchError("");
 
     try {
+      setLoading(true); // ✅ start loading
+
       const res = await axios.get("https://nominatim.openstreetmap.org/search", {
         params: {
-          q: query,
+          q,
           format: "json",
           limit: 1,
         },
+        timeout: 8000, // ✅ added
       });
 
       if (!res.data?.length) {
@@ -46,6 +53,8 @@ const Navbar = () => {
       setQuery("");
     } catch (err) {
       setSearchError("Search failed. Try again.");
+    } finally {
+      setLoading(false); // ✅ stop loading
     }
   };
 
@@ -86,20 +95,18 @@ const Navbar = () => {
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
-                if (searchError) setSearchError(""); // ✅ clear while typing
+                if (searchError) setSearchError("");
               }}
               onKeyDown={searchLocation}
-              placeholder={location?.label || "Search location"}
+              placeholder={loading ? "Searching..." : location?.label || "Search location"}
               className="bg-transparent outline-none text-sm ml-2 w-44 text-white"
+              disabled={loading} // ✅ optional, prevents typing during search
             />
           </div>
-
-          {/* ✅ error text */}
-          {searchError && (
-            <p className="text-xs text-red-400 mt-1">{searchError}</p>
-          )}
+          {searchError && <p className="text-xs text-red-400 mt-1">{searchError}</p>}
         </div>
       </nav>
+
     </>
   );
 };
