@@ -7,7 +7,9 @@ export const LocationProvider = ({ children }) => {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const requestLocation = () => {
+    setError(null);
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({
@@ -16,13 +18,22 @@ export const LocationProvider = ({ children }) => {
           label: "Current Location",
         });
       },
-      (err) => setError(err.message),
+      (err) => {
+        if (err.code === 1) setError("Please allow location access to show your current AQI.");
+        else setError("Couldn’t get your location. Please try again.");
+      },
       { enableHighAccuracy: true }
     );
+  };
+
+  useEffect(() => {
+    requestLocation();
   }, []);
 
   return (
-    <LocationContext.Provider value={{ location, setLocation, error }}>
+    <LocationContext.Provider
+      value={{ location, setLocation, error, setError, requestLocation }}
+    >
       {children}
     </LocationContext.Provider>
   );

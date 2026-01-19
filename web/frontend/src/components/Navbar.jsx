@@ -3,7 +3,6 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useLocationContext } from "../context/LocationContext";
-import LocationPickerMap from "../components/LocationPickerMap.jsx";
 
 const Navbar = () => {
   const { location, setLocation } = useLocationContext();

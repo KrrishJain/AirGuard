@@ -1,32 +1,30 @@
+// src/utils/reverseGeocode.js
 import axios from "axios";
 
-export const reverseGeocode = async (lat, lng) => {
+export const reverseGeocode = async (lat, lon) => {
   try {
-    const res = await axios.get(
+    const { data: geo } = await axios.get(
       "https://nominatim.openstreetmap.org/reverse",
       {
-        params: {
-          lat,
-          lon: lng,
-          format: "json",
-          addressdetails: 1,
-        },
-        headers: {
-          "Accept-Language": "en",
-        },
+        params: { format: "json", lat, lon },
+        timeout: 8000,
       }
     );
 
-    const addr = res.data?.address;
+    const address = geo?.address || {};
+    const name =
+      address.suburb ||
+      address.neighbourhood ||
+      address.city_district ||
+      address.city ||
+      address.town ||
+      address.village ||
+      "Unknown location";
 
-    return (
-      addr?.suburb ||
-      addr?.neighbourhood ||
-      addr?.city_district ||
-      addr?.city ||
-      "Selected location"
-    );
+    const state = address.state || "";
+
+    return state ? `${name}, ${state}` : name;
   } catch {
-    return "Selected location";
+    return "Unknown location";
   }
 };
