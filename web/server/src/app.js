@@ -11,9 +11,11 @@ const app = express();
 
 /* ✅ JSON FIRST */
 
+app.use(express.json()); // ✅ add this
 app.use(cors({
   origin: true, // ⚠️ Allow all origins (ONLY FOR TESTING)
   credentials: true,
+
 }));
 
 
