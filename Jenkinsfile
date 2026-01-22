@@ -30,6 +30,7 @@ pipeline {
       steps {
         bat '''
           cd web\\server
+          npm i -g pnpm
           pnpm --version
           pnpm install
           pnpm test
