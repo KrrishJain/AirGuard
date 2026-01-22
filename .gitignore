@@ -33,3 +33,7 @@ Thumbs.db
 
 # drizzle (optional, keep if you don't want local generated files)
 server/drizzle/
+
+# Site24x7 APM Insight generated data
+**/apminsightdata/
+**/apminsightnode.json

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "apminsight";
 import app from "./app.js";
 import { connectDB } from "./db/db.js";
 import { startAqiAlertCron } from "./cron/aqiAlert.cron.js";
