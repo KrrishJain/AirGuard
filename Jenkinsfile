@@ -69,18 +69,23 @@ pipeline {
 
     stage('Deploy to EC2') {
       steps {
-        withCredentials([file(credentialsId: 'ec2-key-file', variable: 'SSH_KEY_FILE')]) {
+        withCredentials([
+          file(credentialsId: 'ec2-key-file', variable: 'SSH_KEY_FILE'),
+          file(credentialsId: 'airguard-server-env-file', variable: 'ENV_FILE')
+        ]) {
           bat """
             icacls "%SSH_KEY_FILE%" /inheritance:r
-            icacls "%SSH_KEY_FILE%" /grant "NT AUTHORITY\\SYSTEM:R"
+            icacls "%SSH_KEY_FILE%" /grant "NT AUTHORITY\\\\SYSTEM:R"
+
+            scp -i "%SSH_KEY_FILE%" -o StrictHostKeyChecking=no "%ENV_FILE%" %EC2_USER%@%EC2_HOST%:~/AirGuard/web/server/.env
 
             ssh -i "%SSH_KEY_FILE%" -o StrictHostKeyChecking=no %EC2_USER%@%EC2_HOST% "cd ~/AirGuard && git checkout development && git pull origin development && cd web/server && docker rm -f airguard_server >/dev/null 2>&1 || true; docker build -t airguard-server:ec2 . && docker run -d --restart unless-stopped --name airguard_server --env-file .env -p 3001:3001 airguard-server:ec2"
           """
         }
       }
     }
-
   }
+
   post {
     success { echo "🎉🎉 PIPELINE SUCCESS" }
     failure { echo "❌ PIPELINE FAILED" }
