@@ -15,6 +15,7 @@
   "packageManager": "pnpm@10.18.1",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "apminsight": "^5.2.1",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
