@@ -86,7 +86,7 @@ const PollutionSites = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* ✅ remove side padding on mobile */}
-      <div className="max-w-7xl mx-auto px-0 sm:px-4 lg:px-6 py-6 sm:py-8 space-y-6">
+      <div className="max-w-7xl mx-auto lg:px-6 py-6 sm:py-8 space-y-6">
         {/* ✅ responsive header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 px-4 sm:px-0">
           <h1 className="text-2xl sm:text-3xl font-semibold text-white">
@@ -102,7 +102,7 @@ const PollutionSites = () => {
         </div>
 
         {/* ✅ map padding only on mobile */}
-        <div className="px-4 sm:px-0">
+        <div className=" m:px-0">
           <PollutionMap
             location={location}
             sites={sites}
@@ -111,7 +111,7 @@ const PollutionSites = () => {
         </div>
 
         {/* ✅ cards padding only on mobile */}
-        <div className="px-4 sm:px-0">
+        <div className="sm:px-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-gradient-to-br from-gray-900 to-gray-800 p-4 rounded-xl">
             {sites.map((site) => {
               const active = site.id === selectedSiteId;

@@ -15,7 +15,7 @@ const App = () => {
       <Navbar />
 
       {/* 🔹 Fixed width wrapper */}
-      <main className="max-w-7xl mx-auto px-1 py-6">
+      <main className="max-w-7xl mx-auto px-5 py-6">
         <LocationGate>
           <Routes>
             <Route path="/" element={<AQIDashboard />} />

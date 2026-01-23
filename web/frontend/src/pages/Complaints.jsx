@@ -84,7 +84,7 @@ const Complaints = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* ✅ remove side padding on mobile, keep on bigger screens */}
-      <div className="max-w-7xl mx-auto  lg:px-6 py-6 sm:py-8 space-y-6">
+      <div className="max-w-7xl mx-auto lg:px-6 py-6 sm:py-8 space-y-6">
         {/* ✅ better mobile header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 px-4 sm:px-0">
           <h1 className="text-white text-2xl sm:text-3xl font-semibold">
@@ -99,7 +99,7 @@ const Complaints = () => {
         </div>
 
         {/* ✅ cards padding only on mobile */}
-        <div className="px-4 sm:px-0 space-y-6">
+        <div className=" sm:px-0 space-y-6">
           {complaints.map((c) => (
             <div
               key={c.complaintId}
