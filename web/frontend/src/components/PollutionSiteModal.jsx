@@ -58,18 +58,25 @@ const PollutionSiteModal = ({
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl max-h-[80vh] bg-gray-800 rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-        {/* header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10">
-          <h2 className="text-white text-xl font-semibold">Register Pollution Site</h2>
-          <button onClick={onClose} className="text-white/60 hover:text-white text-2xl">
+      {/* shell */}
+      <div className="w-full max-w-5xl max-h-[80vh] bg-gray-800 rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+        {/* header fixed */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 shrink-0">
+          <h2 className="text-white text-xl font-semibold">
+            Register Pollution Site
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-white/60 hover:text-white text-2xl"
+          >
             ✕
           </button>
         </div>
 
-        <div className="p-6">
+        {/* body scroll */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 modal-scroll">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* LEFT: form */}
+            {/* LEFT */}
             <div className="space-y-4">
               <div>
                 <label className="text-white/70 text-sm">Site Name</label>
@@ -86,7 +93,9 @@ const PollutionSiteModal = ({
                 <select
                   className="w-full mt-2 p-3 rounded-xl bg-gray-700 text-white outline-none border border-white/10"
                   value={form.siteType}
-                  onChange={(e) => setForm({ ...form, siteType: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, siteType: e.target.value })
+                  }
                 >
                   <option value="construction">Construction</option>
                   <option value="industry">Industry</option>
@@ -100,7 +109,9 @@ const PollutionSiteModal = ({
                 <select
                   className="w-full mt-2 p-3 rounded-xl bg-gray-700 text-white outline-none border border-white/10"
                   value={form.emissionType}
-                  onChange={(e) => setForm({ ...form, emissionType: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, emissionType: e.target.value })
+                  }
                 >
                   <option value="PM10">PM10</option>
                   <option value="PM2.5">PM2.5</option>
@@ -118,7 +129,9 @@ const PollutionSiteModal = ({
 
                 <button
                   onClick={onSubmit}
-                  disabled={submitting || !form.name || !form.latitude || !form.longitude}
+                  disabled={
+                    submitting || !form.name || !form.latitude || !form.longitude
+                  }
                   className={`px-5 py-2.5 rounded-xl text-white transition ${
                     submitting
                       ? "bg-gray-500 cursor-not-allowed"
@@ -130,7 +143,7 @@ const PollutionSiteModal = ({
               </div>
             </div>
 
-            {/* RIGHT: location */}
+            {/* RIGHT */}
             <div className="space-y-4">
               <div>
                 <p className="text-white/70 text-sm">Selected Location</p>
@@ -140,7 +153,6 @@ const PollutionSiteModal = ({
                 </p>
               </div>
 
-              {/* search bar */}
               <div className="rounded-2xl bg-gray-700/30 border border-white/10 p-3">
                 <div className="flex items-center gap-2">
                   <div className="text-white/50 text-sm">🔎</div>
@@ -166,16 +178,24 @@ const PollutionSiteModal = ({
                   </button>
                 </div>
 
-                {searchError && <p className="text-xs text-red-400 mt-2">{searchError}</p>}
+                {searchError && (
+                  <p className="text-xs text-red-400 mt-2">{searchError}</p>
+                )}
               </div>
 
-              {/* map */}
-              <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-900 h-[320px] lg:h-[420px]">
+              <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-900 h-[280px] sm:h-[320px] lg:h-[420px]">
                 <LocationPickerMap
                   key={`${form.latitude}-${form.longitude}`}
-                  initialLocation={{ latitude: form.latitude, longitude: form.longitude }}
+                  initialLocation={{
+                    latitude: form.latitude,
+                    longitude: form.longitude,
+                  }}
                   onSelect={(lat, lng) => {
-                    setForm((prev) => ({ ...prev, latitude: lat, longitude: lng }));
+                    setForm((prev) => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                    }));
                   }}
                 />
               </div>
@@ -187,6 +207,17 @@ const PollutionSiteModal = ({
           </div>
         </div>
       </div>
+
+      <style>{`
+        .modal-scroll {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+        .modal-scroll::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
+        }
+      `}</style>
     </div>
   );
 };

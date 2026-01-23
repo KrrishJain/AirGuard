@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import LocationPickerMap from "../utils/LocationPickerMap";
 import { geocodePlace, reverseGeocode } from "../utils/geocoding";
 
-const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting }) => {
+const ComplaintModal = ({
+  isOpen,
+  onClose,
+  form,
+  setForm,
+  onSubmit,
+  isSubmitting,
+}) => {
   const [locationName, setLocationName] = useState("Detecting location...");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState("");
@@ -52,17 +59,23 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="w-full max-w-5xl max-h-[80vh] bg-gray-800 rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-        {/* header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10">
-          <h2 className="text-white text-xl font-semibold">Report Pollution Complaint</h2>
-          <button onClick={onClose} className="text-white/60 hover:text-white text-2xl">
+      {/* ✅ modal shell */}
+      <div className="w-full max-w-5xl max-h-[80vh] bg-gray-800 rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+        {/* ✅ header fixed */}
+        <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 shrink-0">
+          <h2 className="text-white text-xl font-semibold">
+            Report Pollution Complaint
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-white/60 hover:text-white text-2xl"
+          >
             ✕
           </button>
         </div>
 
-        {/* body (no scroll) */}
-        <div className="p-6">
+        {/* ✅ body scroll (clean) */}
+        <div className="flex-1 overflow-y-auto px-6 py-6 modal-scroll">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* LEFT */}
             <div className="space-y-4">
@@ -71,7 +84,9 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
                 <select
                   className="w-full mt-2 p-3 rounded-xl bg-gray-700 text-white outline-none border border-white/10"
                   value={form.complaintType}
-                  onChange={(e) => setForm({ ...form, complaintType: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, complaintType: e.target.value })
+                  }
                 >
                   <option value="dust">Dust</option>
                   <option value="smoke">Smoke</option>
@@ -98,7 +113,9 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
                   placeholder="Describe the issue..."
                   className="w-full mt-2 p-3 rounded-xl bg-gray-700 text-white outline-none border border-white/10 min-h-[170px]"
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
                 />
               </div>
 
@@ -134,7 +151,6 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
                 </p>
               </div>
 
-              {/* nicer search bar (no header) */}
               <div className="rounded-2xl bg-gray-700/30 border border-white/10 p-3">
                 <div className="flex items-center gap-2">
                   <div className="text-white/50 text-sm">🔎</div>
@@ -160,16 +176,24 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
                   </button>
                 </div>
 
-                {searchError && <p className="text-xs text-red-400 mt-2">{searchError}</p>}
+                {searchError && (
+                  <p className="text-xs text-red-400 mt-2">{searchError}</p>
+                )}
               </div>
 
-              {/* map (recenter on search by key) */}
-              <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-900 h-[320px] lg:h-[420px]">
+              <div className="rounded-2xl overflow-hidden border border-white/10 bg-gray-900 h-[280px] sm:h-[320px] lg:h-[420px]">
                 <LocationPickerMap
                   key={`${form.latitude}-${form.longitude}`}
-                  initialLocation={{ latitude: form.latitude, longitude: form.longitude }}
+                  initialLocation={{
+                    latitude: form.latitude,
+                    longitude: form.longitude,
+                  }}
                   onSelect={(lat, lng) => {
-                    setForm((prev) => ({ ...prev, latitude: lat, longitude: lng }));
+                    setForm((prev) => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                    }));
                   }}
                 />
               </div>
@@ -181,6 +205,18 @@ const ComplaintModal = ({ isOpen, onClose, form, setForm, onSubmit, isSubmitting
           </div>
         </div>
       </div>
+
+      {/* ✅ clean scrollbar (hidden) */}
+      <style>{`
+        .modal-scroll {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE/Edge */
+        }
+        .modal-scroll::-webkit-scrollbar {
+          width: 0px;
+          height: 0px;
+        }
+      `}</style>
     </div>
   );
 };

@@ -11,16 +11,17 @@ const MajorPollutants = ({ data }) => {
   ];
 
   return (
-    <div className="rounded-3xl p-8">
-      <h2 className="text-white text-2xl mb-6">Major Air Pollutants</h2>
+    <div className="rounded-3xl  sm:px-6 lg:px-8 py-5">
+      <h2 className="text-white text-xl sm:text-2xl mb-4">
+        Major Air Pollutants
+      </h2>
 
-      <div className="grid md:grid-cols-3 gap-4">
+      {/* ✅ 2 per row on mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
         {pollutants.map((p, i) => (
           <div key={i} className="bg-gray-700/50 rounded-xl p-4">
             <div className="text-white/70 text-sm">{p.name}</div>
-            <div className="text-white text-2xl font-bold">
-              {fmt(p.value)}
-            </div>
+            <div className="text-white text-2xl font-bold">{fmt(p.value)}</div>
             <div className="text-white/50 text-xs">{p.unit}</div>
           </div>
         ))}

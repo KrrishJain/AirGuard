@@ -11,9 +11,8 @@ const AQIDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [aqiError, setAqiError] = useState("");
 
-
-
-  const { location, setLocation, error, requestLocation, setError } = useLocationContext();
+  const { location, setLocation, error, requestLocation, setError } =
+    useLocationContext();
 
   useEffect(() => {
     if (!location) return;
@@ -24,7 +23,7 @@ const AQIDashboard = () => {
   const fetchAQIData = async () => {
     try {
       setLoading(true);
-      
+
       setAqiError("");
 
       const res = await api.get("/current-aqi", {
@@ -48,10 +47,6 @@ const AQIDashboard = () => {
     }
   };
 
-
-
- 
-
   if (!location) {
     return <div className="text-slate-300 p-6">Getting your location...</div>;
   }
@@ -61,13 +56,21 @@ const AQIDashboard = () => {
   }
 
   if (!aqiData) {
-    return <div className="text-red-400 p-6">{aqiError || "Failed to load AQI data."}</div>;
+    return (
+      <div className="text-red-400 p-6">
+        {aqiError || "Failed to load AQI data."}
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto py-8 space-y-8">
-        <MainAQICard data={aqiData} onRefresh={fetchAQIData} loading={loading} />
+      <div className="max-w-7xl mx-auto py-8 space-y-8  sm:px-6">
+        <MainAQICard
+          data={aqiData}
+          onRefresh={fetchAQIData}
+          loading={loading}
+        />
         <MajorPollutants data={aqiData} />
         {/* <AQIHistoryChart /> */}
       </div>
