@@ -10,7 +10,7 @@ const WindRiskAnalysis = () => {
     const fetchWindRisk = async () => {
       try {
         // ✅ Changed to use api instance
-        const { data: result } = await api.get('/wind-risk-analysis');
+        const { data: result } = await api.get("/wind-risk-analysis");
         setData(result);
       } catch (err) {
         console.error(err);
@@ -35,12 +35,16 @@ const WindRiskAnalysis = () => {
       {/* Source AQI */}
       <div className="flex items-center gap-4 mb-6">
         <span className="text-white/70 text-sm">Source AQI</span>
-        <span className="text-5xl font-bold text-rose-400">{data.source_aqi}</span>
+        <span className="text-5xl font-bold text-rose-400">
+          {data.source_aqi}
+        </span>
       </div>
 
       {/* Affected Locations */}
       <div className="mb-6">
-        <h3 className="text-white font-semibold mb-4">Affected Nearby Locations</h3>
+        <h3 className="text-white font-semibold mb-4">
+          Affected Nearby Locations
+        </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {data.affected_locations.map((loc, idx) => (
@@ -59,7 +63,9 @@ const WindRiskAnalysis = () => {
 
               <div className="text-white/70 text-sm">
                 Risk Score:{" "}
-                <span className="text-rose-400 font-semibold">{loc.risk_score}</span>
+                <span className="text-rose-400 font-semibold">
+                  {loc.risk_score}
+                </span>
               </div>
             </div>
           ))}
@@ -71,7 +77,9 @@ const WindRiskAnalysis = () => {
         <div className="bg-white/10 rounded-xl p-4 border border-white/10">
           <div className="flex items-center gap-2 mb-1">
             <MdOutlineDangerous className="text-yellow-400" />
-            <span className="text-white font-semibold">Prediction Confidence</span>
+            <span className="text-white font-semibold">
+              Prediction Confidence
+            </span>
           </div>
           <p className="text-white/70 text-sm">{data.confidence}</p>
         </div>

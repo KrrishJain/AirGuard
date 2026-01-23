@@ -11,7 +11,7 @@ const MajorPollutants = ({ data }) => {
   ];
 
   return (
-    <div className="bg-gray-800/50 rounded-3xl p-8">
+    <div className="rounded-3xl p-8">
       <h2 className="text-white text-2xl mb-6">Major Air Pollutants</h2>
 
       <div className="grid md:grid-cols-3 gap-4">

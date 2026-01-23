@@ -1,47 +1,25 @@
 import { useState } from "react";
-import axios from "axios";
 import { useLocationContext } from "../context/LocationContext";
+import { geocodePlace } from "../utils/geocoding"; // ✅ add
 
 const LocationGate = ({ children }) => {
-  const { error, requestLocation, setLocation, setError } =
-    useLocationContext();
+  const { error, setLocation, setError } = useLocationContext();
 
   const [manualQuery, setManualQuery] = useState("");
   const [manualError, setManualError] = useState("");
 
   const searchManualLocation = async () => {
-    const q = manualQuery.trim();
-    if (!q) return;
+    const place = await geocodePlace(manualQuery);
+
+    if (!place) {
+      setManualError("No location found");
+      return;
+    }
 
     setManualError("");
-
-    try {
-      const res = await axios.get(
-        "https://nominatim.openstreetmap.org/search",
-        {
-          params: { q, format: "json", limit: 1 },
-          timeout: 8000,
-        },
-      );
-
-      if (!res.data?.length) {
-        setManualError("No location found");
-        return;
-      }
-
-      const place = res.data[0];
-
-      setLocation({
-        latitude: parseFloat(place.lat),
-        longitude: parseFloat(place.lon),
-        label: place.display_name,
-      });
-
-      setError(null);
-      setManualQuery("");
-    } catch {
-      setManualError("Search failed. Try again.");
-    }
+    setLocation(place);
+    setError(null);
+    setManualQuery("");
   };
 
   if (!error) return children;

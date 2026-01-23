@@ -2,48 +2,25 @@ import { useEffect, useState } from "react";
 import { RefreshCw, MapPin, Cloud, Droplets, Wind, Sun } from "lucide-react";
 import { fmt } from "../utils/format.js";
 import { getAQICategory } from "../utils/AqiCategory.jsx";
-import axios from "axios";
+import { reverseGeocode } from "../utils/geocoding"; // ✅ use utility
 
 const MainAQICard = ({ data, onRefresh, loading }) => {
   const category = getAQICategory(data.aqi);
   const [locationName, setLocationName] = useState("Detecting location...");
 
-  // 🔹 reverse geocode lat/lng → location name
   useEffect(() => {
     if (!data?.latitude || !data?.longitude) return;
 
-    const fetchLocationName = async () => {
-      try {
-        const { data: geo } = await axios.get(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${data.latitude}&lon=${data.longitude}`
-        );
-
-        const address = geo.address || {};
-        const name =
-          address.suburb ||
-          address.neighbourhood ||
-          address.city_district ||
-          address.city ||
-          address.town ||
-          address.village ||
-          "Unknown location";
-
-        const state = address.state || "";
-
-        setLocationName(state ? `${name}, ${state}` : name);
-      } catch (err) {
-        console.error("Reverse geocode failed:", err);
-        setLocationName("Unknown location");
-      }
+    const load = async () => {
+      const name = await reverseGeocode(data.latitude, data.longitude);
+      setLocationName(name);
     };
 
-    fetchLocationName();
-  }, [data.latitude, data.longitude]);
+    load();
+  }, [data?.latitude, data?.longitude]);
 
   return (
-    <div
-      className={`bg-gradient-to-br ${category.color} rounded-3xl p-8 shadow-2xl relative`}
-    >
+    <div className={`bg-gradient-to-br ${category.color} rounded-3xl p-8 shadow-2xl relative`}>
       <div className="flex justify-between mb-6">
         <div>
           <div className="flex items-center gap-2 text-white/80 text-sm">
@@ -62,14 +39,13 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
 
         <button
           onClick={onRefresh}
-          className="bg-white/20 hover:bg-white/30 text-white px-4  rounded-full"
+          className="bg-white/20 hover:bg-white/30 text-white px-4 rounded-full"
         >
           <RefreshCw className={`${loading ? "animate-spin" : ""}`} />
         </button>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8 items-center">
-        {/* LEFT */}
         <div>
           <div className="text-8xl font-bold text-white">{fmt(data.aqi, 0)}</div>
 
@@ -89,7 +65,6 @@ const MainAQICard = ({ data, onRefresh, loading }) => {
           </div>
         </div>
 
-        {/* RIGHT */}
         <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
           <div className="flex items-center gap-4 mb-6">
             <Cloud className="w-10 h-10 text-white" />

@@ -1,14 +1,13 @@
-import { FaSearch, FaMapMarkedAlt } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
 import { useLocationContext } from "../context/LocationContext";
+import { geocodePlace } from "../utils/geocoding"; // ✅ use utility
 
 const Navbar = () => {
   const { location, setLocation } = useLocationContext();
   const [query, setQuery] = useState("");
-  const [showMap, setShowMap] = useState(false);
-  const [searchError, setSearchError] = useState(""); // ✅ added
+  const [searchError, setSearchError] = useState("");
 
   const linkClass = ({ isActive }) =>
     `cursor-pointer ${
@@ -16,36 +15,18 @@ const Navbar = () => {
     }`;
 
   const searchLocation = async (e) => {
-    if (e.key !== "Enter" || !query.trim()) return;
+    if (e.key !== "Enter") return;
 
-    setSearchError(""); // ✅ clear previous error
+    const place = await geocodePlace(query);
 
-    try {
-      const res = await axios.get("https://nominatim.openstreetmap.org/search", {
-        params: {
-          q: query,
-          format: "json",
-          limit: 1,
-        },
-      });
-
-      if (!res.data?.length) {
-        setSearchError("No location found");
-        return;
-      }
-
-      const place = res.data[0];
-
-      setLocation({
-        latitude: parseFloat(place.lat),
-        longitude: parseFloat(place.lon),
-        label: place.display_name,
-      });
-
-      setQuery("");
-    } catch (err) {
-      setSearchError("Search failed. Try again.");
+    if (!place) {
+      setSearchError("No location found");
+      return;
     }
+
+    setSearchError("");
+    setLocation(place);
+    setQuery("");
   };
 
   return (
@@ -76,7 +57,6 @@ const Navbar = () => {
           </li>
         </ul>
 
-        {/* Location + Search */}
         <div className="flex flex-col">
           <div className="flex items-center gap-3 bg-slate-800 px-3 py-2 rounded-lg max-w-[320px]">
             <FaSearch className="text-slate-400 text-sm shrink-0" />
@@ -85,7 +65,7 @@ const Navbar = () => {
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
-                if (searchError) setSearchError(""); // ✅ clear while typing
+                if (searchError) setSearchError("");
               }}
               onKeyDown={searchLocation}
               placeholder={location?.label || "Search location"}
@@ -93,7 +73,6 @@ const Navbar = () => {
             />
           </div>
 
-          {/* ✅ error text */}
           {searchError && (
             <p className="text-xs text-red-400 mt-1">{searchError}</p>
           )}
