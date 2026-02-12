@@ -13,7 +13,12 @@ const app = express();
 
 app.use(express.json()); // ✅ add this
 app.use(cors({
-  origin: true, // ⚠️ Allow all origins (ONLY FOR TESTING)
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+  ], 
   credentials: true,
 
 }));

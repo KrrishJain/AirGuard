@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  server:
+    build: ./server
+    container_name: airguard-server
+    ports:
+      - "3001:3001"
+    networks:
+      - airguard_network
+    restart: unless-stopped
+  client:
+    build: ./frontend
+    container_name: airguard-client
+    ports:
+      - "3000:3000"
+    networks:
+      - airguard_network
+    depends_on:
+      - server
+    restart: unless-stopped
+
+networks:
+  airguard_network:
+    driver: bridge
