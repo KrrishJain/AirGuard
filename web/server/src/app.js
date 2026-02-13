@@ -18,6 +18,8 @@ app.use(cors({
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
+    //Production Url
+    "http://3.108.65.200:3001"
   ], 
   credentials: true,
 
