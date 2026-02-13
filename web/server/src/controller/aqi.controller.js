@@ -111,7 +111,8 @@ export const getCurrentAqi = async (req, res) => {
 
     if (result.length === 0) {
       return res.status(404).json({
-        message: "No nearby AQI data found",
+        message:
+          "Since this is a prototype, AQI data is available only for the Matunga region. Please enter Matunga in the search location above.",
       });
     }
 
@@ -145,7 +146,7 @@ export const getAqiHistory = async (req, res) => {
         WHERE created_at >= NOW() - INTERVAL '24 hours'
         GROUP BY hour
         ORDER BY hour ASC
-      `
+      `,
     );
 
     const rows = result;

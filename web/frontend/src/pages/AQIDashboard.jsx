@@ -57,8 +57,17 @@ const AQIDashboard = () => {
 
   if (!aqiData) {
     return (
-      <div className="text-red-400 p-6">
-        {aqiError || "Failed to load AQI data."}
+      <div className="flex justify-center items-center py-10">
+        <div className="max-w-md w-full rounded-xl border border-red-500/30 bg-red-500/10 backdrop-blur-md p-5 text-center shadow-lg">
+          <p className="text-red-400 font-semibold text-lg mb-1">
+            Unable to load AQI data
+          </p>
+
+          <p className="text-red-300 text-sm">
+            {aqiError ||
+              "Since this is a prototype, AQI data is available only for the Matunga region. Please enter Matunga in the search location."}
+          </p>
+        </div>
       </div>
     );
   }
